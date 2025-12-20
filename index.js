@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const dotenv = require("dotenv")
+const { connect } = require("./lnd")
 // Imports for our new routers
 const usersRouter = require("./routers/usersRouter");
 const lightningRouter = require("./routers/lightningRouter");
@@ -29,12 +30,15 @@ server.use(cors());
 server.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 100, // limit each IP to 100 requests per windowMs
+      max: 1000, // limit each IP to 100 requests per windowMs
     })
    );
    
 // Use the built-in JSON middleware to parse incoming JSON requests
 server.use(express.json())
+
+// Connect to our LND node
+connect();
 
 // Set up a route to handle GET requests to the root path
 server.get("/", (req, res) => {
